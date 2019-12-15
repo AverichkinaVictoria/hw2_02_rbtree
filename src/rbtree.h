@@ -17,7 +17,7 @@
 #define RBTREE_RBTREE_H_
 
 // Uncomment this if you want to implement deletion.
-//#define RBTREE_WITH_DELETION
+#define RBTREE_WITH_DELETION
 
 
 namespace xi {
@@ -299,6 +299,7 @@ public:
      *  Если соответствующего ключа нет в дереве, генерирует исключительную ситуацию \c std::invalid_argument.
      */
     void remove(const Element& key);
+    void deleteExtra (Node *x);
 #endif // RBTREE_WITH_DELETION
 
     /** \brief Ищет элемент \c key в дереве и возвращает соответствующий ему узел. 
