@@ -185,28 +185,28 @@ template <typename Element, typename Compar >
 typename RBTree<Element, Compar>::Node* 
         RBTree<Element, Compar>::insertNewBstEl(const Element& key)
 {
-    Node* insertNode = new Node(key);
     Node* extra = _root;
-    Node* extraFather = nullptr;
+    Node* extraPar = nullptr;
+    Node* insNode = new Node(key);
     while (extra != nullptr)
     {
-        extraFather = extra;
-        if (insertNode->_key < extra->_key)
-            extra = extra->_left;
-        else if (insertNode->_key > extra->_key)
+        extraPar = extra;
+        if (extra->_key < insNode->_key)
             extra = extra->_right;
+        else if (extra->_key > insNode->_key)
+            extra = extra->_left;
         else
             throw invalid_argument("Keys are equal!");
     }
-    insertNode->_parent = extraFather;
-    if (insertNode->_key < extraFather->_key)
-        extraFather->_left = insertNode;
-    else if (extraFather == nullptr)
-        _root = insertNode;
+    insNode->_parent = extraPar;
+    if (extraPar == nullptr)
+        _root = insNode;
+    else if (extraPar->_key > insNode->_key)
+        extraPar->_left = insNode;
     else
-        extraFather->_right = insertNode;
-    insertNode->setRed();
-    return insertNode;
+        extraPar->_right = insNode;
+    insNode->setRed();
+    return insNode;
 }
 
 
@@ -214,7 +214,6 @@ template <typename Element, typename Compar >
 typename RBTree<Element, Compar>::Node* 
     RBTree<Element, Compar>::rebalanceDUG(Node* nd)
 {
-
     // TODO: этот метод студенты могут оставить и реализовать при декомпозиции балансировки дерева
     // В методе оставлены некоторые важные комментарии/snippet-ы
 
@@ -228,7 +227,7 @@ typename RBTree<Element, Compar>::Node*
     if (uncle->isRed() && uncle != nullptr)
     {
         // дядю и папу красим в черное
-        // а дедушку — в коммунистические цвета
+        // а дедушку — в коммунистические цвета
         uncle->setBlack();
         nd->_parent->setBlack();
         uncle->_parent->setRed();
@@ -277,14 +276,53 @@ typename RBTree<Element, Compar>::Node*
 template <typename Element, typename Compar >
 void RBTree<Element, Compar>::rebalance(Node* nd)
 {
-   if (nd->isBlack())
-       return;
-
-    // пока папа — цвета пионерского галстука, действуем
-    while (nd->isDaddyRed())
+    Node* uncle = nullptr;
+    while (nd->_parent != nullptr && nd->_parent->isRed())
     {
-        // локальная перебалансировка семейства "папа, дядя, дедушка" и повторная проверка
-        nd = rebalanceDUG(nd);
+        if (nd->_parent->isLeftChild())
+        {
+            uncle = nd->_parent->_parent->_right;
+            if (uncle != nullptr && uncle->isRed())
+            {
+                nd->_parent->setBlack();
+                uncle->setBlack();
+                nd->_parent->_parent->setRed();
+                nd = nd->_parent->_parent;
+            }
+            else
+            {
+                if (nd->isRightChild())
+                {
+                    nd = nd->_parent;
+                    rotLeft(nd);
+                }
+                nd->_parent->setBlack();
+                nd->_parent->_parent->setRed();
+                rotRight(nd->_parent->_parent);
+            }
+        }
+        else if (nd->_parent->isRightChild())
+        {
+            uncle = nd->_parent->_parent->_left;
+            if (uncle != nullptr && uncle->isRed())
+            {
+                uncle->setBlack();
+                nd->_parent->_parent->setRed();
+                nd->_parent->setBlack();
+                nd = nd->_parent->_parent;
+            }
+            else
+            {
+                if (nd->isLeftChild())
+                {
+                    nd = nd->_parent;
+                    rotRight(nd);
+                }
+                nd->_parent->_parent->setRed();
+                nd-> _parent->setBlack();
+                rotLeft(nd->_parent->_parent);
+            }
+        }
     }
     _root->setBlack();
 }
