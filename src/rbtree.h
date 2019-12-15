@@ -299,7 +299,7 @@ public:
      *  Если соответствующего ключа нет в дереве, генерирует исключительную ситуацию \c std::invalid_argument.
      */
     void remove(const Element& key);
-    void deleteExtra (Node *x);
+    void deleteExtra (Node *delNode);
 #endif // RBTREE_WITH_DELETION
 
     /** \brief Ищет элемент \c key в дереве и возвращает соответствующий ему узел. 

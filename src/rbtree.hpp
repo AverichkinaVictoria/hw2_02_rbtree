@@ -12,6 +12,13 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Student:      Averichkina Victoria
+// Group:        184-1
+// Date:         19.10.2019
+////////////////////////////////////////////////////////////////////////////////
+
 #include <stdexcept>        // std::invalid_argument
 #include "rbtree.h"
 
@@ -380,60 +387,74 @@ void RBTree<Element, Compar>::rotRight(typename RBTree<Element, Compar>::Node* n
     }
 
     template<typename Element, typename Compar>
-    void RBTree<Element, Compar>::deleteExtra(RBTree::Node *x)
+    void RBTree<Element, Compar>::deleteExtra(RBTree::Node *delNode)
     {
-        while (x != _root && x->isBlack()) {
-            if (x == x->_parent->_left) {
-                Node *w = x->_parent->_right;
-                if (w->isRed()) {
-                    w->setBlack();
-                    x->_parent->setRed();
-                    rotLeft (x->_parent);
-                    w = x->_parent->_right;
+        while (delNode != _root && delNode->isBlack())
+        {
+            if (delNode == delNode->_parent->_left)
+            {
+                Node *extra = delNode->_parent->_right;
+                if (extra->isRed())
+                {
+                    extra->setBlack();
+                    delNode->_parent->setRed();
+                    rotLeft (delNode->_parent);
+                    extra = delNode->_parent->_right;
                 }
-                if (w->_left->isBlack() && w->_right->isBlack()) {
-                    w->setRed();
-                    x = x->_parent;
-                } else {
-                    if (w->_right->isBlack()) {
-                        w->_left->setBlack();
-                        w->setRed();
-                        rotRight (w);
-                        w = x->_parent->_right;
+                if (extra->_left->isBlack() && extra->_right->isBlack())
+                {
+                    extra->setRed();
+                    delNode = delNode->_parent;
+                }
+                else
+                {
+                    if (extra->_right->isBlack())
+                    {
+                        extra->_left->setBlack();
+                        extra->setRed();
+                        rotRight (extra);
+                        extra = delNode->_parent->_right;
                     }
-                    w->_color = x->_parent->_color;
-                    x->_parent->setBlack();
-                    w->_right->setBlack();
-                    rotLeft (x->_parent);
-                    x = _root;
+                    extra->_color = delNode->_parent->_color;
+                    delNode->_parent->setBlack();
+                    extra->_right->setBlack();
+                    rotLeft (delNode->_parent);
+                    delNode = _root;
                 }
-            } else {
-                Node *w = x->_parent->_left;
-                if (w->isRed()) {
-                    w->setBlack();
-                    x->_parent->setRed();
-                    rotRight (x->_parent);
-                    w = x->_parent->_left;
+            }
+            else
+            {
+                Node *extra = delNode->_parent->_left;
+                if (extra->isRed())
+                {
+                    extra->setBlack();
+                    delNode->_parent->setRed();
+                    rotRight (delNode->_parent);
+                    extra = delNode->_parent->_left;
                 }
-                if (w->_right->isBlack() && w->_left->isBlack()) {
-                    w->setRed();
-                    x = x->_parent;
-                } else {
-                    if (w->_left->isBlack()) {
-                        w->_right->setBlack();
-                        w->setRed();
-                        rotLeft (w);
-                        w = x->_parent->_left;
+                if (extra->_right->isBlack() && extra->_left->isBlack())
+                {
+                    extra->setRed();
+                    delNode = delNode->_parent;
+                }
+                else
+                {
+                    if (extra->_left->isBlack())
+                    {
+                        extra->_right->setBlack();
+                        extra->setRed();
+                        rotLeft (extra);
+                        extra = delNode->_parent->_left;
                     }
-                    w->_color = x->_parent->_color;
-                    x->_parent->setBlack();
-                    w->_left->setBlack();
-                    rotRight (x->_parent);
-                    x = _root;
+                    extra->_color = delNode->_parent->_color;
+                    delNode->_parent->setBlack();
+                    extra->_left->setBlack();
+                    rotRight (delNode->_parent);
+                    delNode = _root;
                 }
             }
         }
-        x->setBlack();
+        delNode->setBlack();
     }
 
 
